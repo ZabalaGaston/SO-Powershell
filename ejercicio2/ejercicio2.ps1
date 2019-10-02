@@ -9,13 +9,9 @@
 # Sullca, Fernando      37841788
 # Zabala, Gaston        34614948
 #
-# FECHA DE CREACIÓN: 01/10/2019
+# FECHA DE CREACIÓN: 02/10/2019
 ##########################################################################
 
-# Debe cumplir con el enunciado
-# El script cuenta con una ayuda visible con Get-Help
-# Validación correcta de los parámetros
-# Se deben usar hash-tables (arrays asociativos)
 
 <#
     .SYNOPSIS
@@ -60,7 +56,8 @@ if($cantidad -lt 1)
 #--- Guardo la lista de todos los procesos activos
 
 $items =  Get-Process | Select-Object Name
-
+$procesos = $items |
+  ForEach-Object { $_.Name }
 
 <#
     Recorro cada uno y voy guardandolo en un hash-table. En caso de que el nombre del proceso ya exista en
@@ -68,29 +65,31 @@ $items =  Get-Process | Select-Object Name
 #>
 $hash = @{}
 
-#Get-Process | Select-Object Name
-
-foreach ($item in $items){
-#    if($hash.ContainsKey($item)){
-#        $hash.$item = 35
-        $hash[$item] += $hash[$item] + 1
-#        Write-Host 'entro'
-#    }else{
-#        $hash.add($item,0)
-#    }
+foreach ($arch in $procesos){
+    $name = $arch
+	
+    if($hash.ContainsKey($name)){
+        $hash[$name] += 1
+    }else{
+        $hash += @{$name = 1}
+    }
 }
+
 
 #Valido que se hayan cargado bien los datos en el hashtable
 	
-	foreach ($key in $hash.GetEnumerator()) {
-		"La clave de $($key.Name) es $($key.Value)"
-	}
+#	foreach ($key in $hash.GetEnumerator()) {
+#		"La clave de $($key.Name) es $($key.Value)"
+#	}
 
 #--- Recorro el hash-table, y me quedo con cada uno que tenga valor >= cantidad ---
 
 foreach($item in $hash.GetEnumerator())
 {  
-	if ($item.Value.Equals("1")){
-        Write-Host 'paso por aca'
+	if ($item.Value -ge $cantidad){
+        Write-Host $item.Key
     }
 }
+
+
+###################################### FIN ##################################################333
