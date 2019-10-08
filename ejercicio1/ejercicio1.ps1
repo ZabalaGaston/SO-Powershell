@@ -33,4 +33,6 @@ Write-Host "El path no existe"
 #2. ¿Agregaría alguna otra validación a los parámetros?
 
 #3. ¿Qué sucede si se ejecuta el script sin ningún parámetro?
-# El script arroja el error "El path no existe"
+# En el caso de ejecutar sin parametros, el archivo de salida declarado como $pathsalida = ".\procesos.txt "
+# Tiene que esistir en la carpeta del script para continuar con la ejecucion
+# En caso contrario El script arroja el error "El path no existe"
