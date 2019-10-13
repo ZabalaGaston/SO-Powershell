@@ -27,8 +27,8 @@ Write-Host "El path no existe"
 
 
 #1. ¿Cuál es el objetivo del script?
-# El objetivo del script es generar un archivo con los procesos que están corriendo. Además, muestra el 
-#nombre del proceso y id de tres procesos
+# El objetivo del script es generar un archivo con los procesos que están corriendo. 
+# Además, muestra el nombre del proceso y id de tres procesos
 
 #2. ¿Agregaría alguna otra validación a los parámetros?
 
