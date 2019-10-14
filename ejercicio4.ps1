@@ -23,21 +23,15 @@
        
     .EXAMPLE
     
-       -PathZip
-       -Directorio
-       -Descompresion
-       -Comprimir
-       -Imformar
+       -PathZip -Comprimir -Directorio
+       -PathZip  -Descompresion -Directorio
+       -PathZip  -Imformar
 
-    .EXAMPLE
-        .\Ejercicio4.ps1 -PathZip C:\Users\Rodrigo\Desktop\archivo.zip
-
-    .EXAMPLE
-        .\Ejercicio4.ps1 -PathZip in.zip
-        .\ejercicio4.ps1 'Carpeta Origen' -Complimir 'Carpeta Destino'                                     
-#>
-
-
+   .EXAMPLE 
+        .\Ejercicio4.ps1 -PathZip C:\Users\Fernando\Desktop\archivo.zip -Informar
+        .\Ejercicio4.ps1 -PathZip in.zip (informar)
+        .\ejercicio4.ps1 -PathZip in.zip -Descomplimir 'Carpeta Destino' 
+        .\ejercicio4.ps1 -PathZip in.zip -Complimir 'Carpeta Origen'#>
 
 #--------------------------Declaracion de parametros-------------------------
 <#
@@ -50,32 +44,31 @@ Param(
     [Parameter(Position = 3, Mandatory = $false)]
     [String] $pathDirectorio
     )
-#>
-       [CmdletBinding()]
+#> [CmdletBinding(DefaultParameterSetName='Informar')]
  Param( 
      [Parameter(Position = 1, Mandatory = $true)]
      [String] $pathZIP,
-
-     [Parameter(ParameterSetName='pathDirectorio',Position = 2, Mandatory=$true)]
+     [Parameter(Position = 3)]
      [String] $pathDirectorio,
+
      [Parameter(ParameterSetName='Descomplimir', Mandatory=$True)]
      [switch]$Descomplimir,
-
-     [Parameter(ParameterSetName='pathDirectorio',Position = 2, Mandatory=$True)]
-     [Parameter(ParameterSetName='Complimir' ,Mandatory=$True)]
-     [string]$Complimir,
+   #  [Parameter(ParameterSetName='pathDirectorio',Position = 2, Mandatory=$True)]
+     [Parameter(ParameterSetName='Complimir' )]
+     [switch]$Complimir,
 
      [Parameter(ParameterSetName='Informar')]
      [switch]$Informar
-        )
+     )
+     
+#--------------------------Declaracion Funciones-----------------------------
+
+
+#--------------------------Funciones Informar-----------------------------
+
 function informar {
  
-    [CmdletBinding()]
-    Param(
-      [Parameter(Mandatory=$True,Position=1)]
-       [string]$PathZip
-    )
-    
+    param([string]$PathZip) 
     if (-Not (Test-Path $PathZip)){
         Write-Host ""
         Write-Warning "El archivo especificado [$PathZip] no existe."
@@ -97,53 +90,57 @@ function informar {
     
     [io.compression.zipfile]::OpenRead("$PathZip").entries |% {
     
-    $cadena1="$($_.Name)";
-    $cadena2="$($($_.Length)/1000000)";
-    $cadena3="$($($_.CompressedLength)/1000000)";
-    $cadena4="$([math]::Round(($_.CompressedLength/$_.Length),2))";
-    
-    ArmandoEscritura $cadena1 $cadena2 $cadena3 $cadena4
+  $Nombre="$($_.Name)";
+    $Tam_Orig="$($($_.Length)/10000)";
+    $tam_compr="$($($_.CompressedLength)/10000)";
+    if($_.Length.Equals(0)) {
+    $Relacion="$([math]::Round(($_.CompressedLength/$_.Length),2))";
+    }
+    else 
+    {$Relacion="$([math]::Round(($_.CompressedLength/1),2))";
+    }
+    ArmandoEscritura  $Nombre $Tam_Orig $tam_compr $Relacion
     };
-}#Fin informar
 
+}#Fin informar
+#--------------------------Funciones complimir-----------------------------
 function complimir {
-    param (
-        [Parameter(Position = 1, Mandatory = $true)]
-    [String] $pathZIP,
-    [Parameter(Position = 2, Mandatory = $false)]
-    [String] $pathDirectorio
-    )
-    $existe = Test-Path $pathZIP
+     param ( [String] $pathZIP, [String] $pathDirectorio )
+    $existe = Test-Path $pathDirectorio
 
     if ($existe -eq $true) {
-        Write-Host "El pathZIP Es correcto"
+       Write-Host "El Directorio a Complimir  Es correcto"
     } else {
-    Write-Host "El pathZIP no existe"
+    Write-Host "El Directorio no existe"
     }
     
         $compress = @{
-            LiteralPath= $pathZIP
+             LiteralPath= $pathDirectorio
             CompressionLevel = "Optimal"
-            DestinationPath = $pathDirectorio+"\archivoZIP.zip"
+            DestinationPath = $pathDirectorio+"\"+$pathZIP
             }
             Compress-Archive @compress
-    exit 1
+    #exit 1
 
 }#Fin complimir
-
-function Expandir {
-    param (
-        [Parameter(Position = 1, Mandatory = $true)]
-    [String] $pathZIP,
-    [Parameter(Position = 2, Mandatory = $false)]
-    [String] $pathDirectorio
+#--------------------------Funciones expandir-----------------------------
+function expandir {
+   param (
+    [String] $pathZIP, [String] $pathDirectorio
     )
     existe = Test-Path $pathZIP
 
-    if ($existe -eq $true) {
-        Write-Host "El pathZIP Es correcto"
+   if ($existe -eq $true) {
+        Write-Host "El PathZIP Es correcto"
     } else {
-    Write-Host "El pathZIP no existe"
+    Write-Host "El PathZIP no existe"
+    }
+    $existe = Test-Path $pathDirectorio
+
+    if ($existe -eq $true) {
+        Write-Host "El Directorio Es correcto"
+    } else {
+    Write-Host "El Directorio no existe"
     }
     
     Expand-Archive -LiteralPath $pathZIP -DestinationPath $pathDirectorio
@@ -152,29 +149,34 @@ exit 1
 
 #--------------------------Validación de parametros-------------------------
 
-$existe = Test-Path $pathZIP
-if ($existe -eq $true) {
-    Write-Host "El pathZIP Es correcto"
-} else {
-Write-Host "El pathZIP no existe"
-}
-
-$existe = Test-Path $pathDirectorio
-if ($existe -eq $true) {
-    Write-Host "El pathDirectorio Es correcto"
-} else {
-Write-Host "El pathDirectorio no existe"
-}
-
-Write-Host "[String] pathZIP $pathZIP,
-[String] pathDirectorio $pathDirectorio"
-
-
 Write-Host ("Parameter set in action: " + $PSCmdlet.ParameterSetName)
 Write-Host ("informar: " + $Informar)
 Write-Host ("Descomplimir: " + $Descomplimir)
 Write-Host ("Complimir: " + $complimir) 
 
+#if ( $PSCmdlet.ParameterSetName.CompareTo("-Informar"))
+if ( $Informar.IsPresent)
+{
+    Write-Host ("Realizando informe Sobre $pathZIP") 
+    informar $pathZIP
+}
+
+if ( $Complimir.IsPresent)
+{
+    Write-Host ("Realizando complesion Sobre $pathDirectorio ") 
+    complimir $pathZIP $pathDirectorio
+    Write-Host ("Nombre asignado Sobre $pathDirectorio es $pathZIP ") 
+}
+
+if ( $Descomplimir.IsPresent)
+{
+    Write-Host ("Realizando descompresion Sobre $pathZIP") 
+    expandir $pathZIP $pathDirectorio
+    Write-Host ("Descompresion Realizada") 
+    exit 1
+}
+
 exit 1
+
 
 
