@@ -8,31 +8,31 @@
 # Zabala, Gaston        34614948
 
 Param (
-[Parameter(Position = 1, Mandatory = $false)]
-[String] $pathsalida = ".\procesos.txt ",
-[int] $cantidad = 3
+  [Parameter(Position = 1, Mandatory = $false)]
+  [String] $pathsalida = ".\procesos.txt ",
+  [int] $cantidad = 3
 )
+
 $existe = Test-Path $pathsalida
 if ($existe -eq $true) {
-$listaproceso = Get-Process
-foreach ($proceso in $listaproceso) {
-$proceso | Format-List -Property Id,Name >> $pathsalida
-}
-for ($i = 0; $i -lt $cantidad ; $i++) {
-Write-Host $listaproceso[$i].Name - $listaproceso[$i].Id
-}
-} else {
-Write-Host "El path no existe"
-}
+  $listaproceso = Get-Process
+  foreach ($proceso in $listaproceso) {
+    $proceso | Format-List -Property Id,Name >> $pathsalida
+  }
 
+  for ($i = 0; $i -lt $cantidad ; $i++) {
+    Write-Host $listaproceso[$i].Name - $listaproceso[$i].Id
+  }
+} else {
+  Write-Host "El path no existe"
+}
 
 #1. ¿Cuál es el objetivo del script?
-# El objetivo del script es generar un archivo con los procesos que están corriendo. 
+# El objetivo del script es generar un archivo con los procesos que están corriendo.
 # Además, muestra el nombre del proceso y id de tres procesos
 
 #2. ¿Agregaría alguna otra validación a los parámetros?
+# Agregariamos la validacion de que $pathsalida exista, ya que Test-Path con un parametro nulo falla.
 
 #3. ¿Qué sucede si se ejecuta el script sin ningún parámetro?
-# En el caso de ejecutar sin parametros, el archivo de salida declarado como $pathsalida = ".\procesos.txt "
-# Tiene que esistir en la carpeta del script para continuar con la ejecucion
-# En caso contrario El script arroja el error "El path no existe"
+# El script arroja el error "El path no existe"
