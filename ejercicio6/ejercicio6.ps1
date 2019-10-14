@@ -5,15 +5,15 @@
 # Integrantes:
 # Cabral, David         39757782
 # Cela, Pablo           36166857
-# Pessolani, Agustin	39670584
+# Pessolani, Agustin	  39670584
 # Sullca, Fernando      37841788
 # Zabala, Gaston        34614948
 ##########################################################################
 <#
         .SYNOPSIS
                 El script se encarga de Sumar dos matrices o realizar un Producto entre una matriz y un escalar.
-                
-        .DESCRIPTION 
+
+        .DESCRIPTION
                 El script recibe una matriz en un archivo de texto y una palabra clave.
                 Si la palabra clave es -Producto, recibe un numero entero, con el cual va a realizar el producto escolar.
                 Si la palabra clave es -Suma, debe ingresar un archivo con otra matriz a sumar.
@@ -30,7 +30,7 @@
 Param(
         [Parameter(Mandatory=$true,Position = 1)]
         [ValidateNotNullOrEmpty()]
-        [string]$Entrada, 
+        [string]$Entrada,
         [Parameter(ParameterSetName="Producto",Position = 2)]
         [int]$Producto,
         [Parameter(ParameterSetName="Suma",Position = 2)]
@@ -64,8 +64,8 @@ function Validar-Suma {
                 Write-Host "El archivo " $Suma " está vacío. Debe ingresar un archivo con una matriz valida."
                 Write-Host "Use el comnado Get-Help para recibir más ayuda."
         exit 4
-} 
-        
+}
+
 }
 function Es-Suma {
         #Función que indica si la operacion es Suma o Producto Escalar.
@@ -85,7 +85,7 @@ function Crear-Matriz {
         $arch = Resolve-Path -Path $arch
         $matriz = @()
         foreach($i in [System.IO.File]::ReadLines($arch)){
-                $new = $i.split("|") 
+                $new = $i.split("|")
                 $matriz += ,$new
         }
         #Se cambie el tipo a Double.
@@ -94,7 +94,7 @@ function Crear-Matriz {
                 $matAux = @(
                         for ($j = 0; $j -lt $matriz[$i].Length; $j++) {
                         [convert]::ToDouble($matriz[$i][$j])
-                        }        
+                        }
                 )
                 $matrizDoble += ,$matAux
         }
@@ -166,7 +166,7 @@ if($operacion -eq $true) {
 }
 else{
         $matrizD = Producto-Escalar $Producto
-}        
+}
 Mostrar-Matriz $matrizD
 $Salida = Crear-Salida
 Guardar-Matriz $matrizD $Salida
