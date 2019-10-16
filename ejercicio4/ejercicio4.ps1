@@ -64,29 +64,40 @@ function informar {
     }
     
     function ArmandoEscritura { 
-   param([string]$name,[string]$tam_Orig,[string]$relacion)   
+      param([string]$name,[string]$tam_Orig,[string]$relacion)   
       $obj = New-Object PSObject 
       $obj | Add-Member NoteProperty Nombre($name) 
       $obj | Add-Member NoteProperty Peso_original_MB($tam_Orig) 
       $obj | Add-Member NoteProperty 'Relacion_Comp(P. Comp /P. Orig)'($relacion)  
+     # Escritura Final.
       Write-Output $obj 
     };
     
     Add-Type -AssemblyName “system.io.compression.filesystem”;
     
-    [io.compression.zipfile]::OpenRead( "$PathZip" ).entries |% {
+    [io.compression.zipfile]::OpenRead( "$PathZip" ).entries |% 
+    {
     
-  $Nombre="$($_.Name)";
-    $Tam_Orig="$($($_.Length)/1000000)";
+    if( $( -Not $_.Name ) ){
+     # Write-Host "$( -Not $_.Name ) $_ "
+        $Nombre="$($_)";
+        }
+        else
+        {
+        $Nombre="$($_.Name)";
+        }
+        $Tam_Orig="$($($_.Length)/1000000)";
+    
+    if($($_.Length -eq 0) )
+         {
+         $Relacion="0";
+         }
+         else 
+        {
+        $Relacion="$([math]::Round(($_.CompressedLength/$_.Length),3))";
+        }
 
-    if($_.Length.Equals(0)) {
-    $Relacion="$([math]::Round(($_.CompressedLength/$_.Length),3))";
-    }
-    else 
-    {$Relacion="$([math]::Round(($_.CompressedLength/1),3))";
-    }
-    
-   ArmandoEscritura  $Nombre $Tam_Orig $Relacion
+     ArmandoEscritura  $Nombre $Tam_Orig $Relacion
     };
 
 }#Fin informar
