@@ -35,4 +35,6 @@ if ($existe -eq $true) {
 # Agregariamos la validacion de que $pathsalida exista, ya que Test-Path con un parametro nulo falla.
 
 #3. ¿Qué sucede si se ejecuta el script sin ningún parámetro?
-# El script arroja el error "El path no existe"
+# Si ejecuta Sin nungun parametro el script tratara de encontrar el archivo por defecto declarado en los parametro ".\procesos.txt",
+# en caso de encontrarlo continua con su ejecucion , en caso contrario 
+# el script arroja el error "El path no existe"
