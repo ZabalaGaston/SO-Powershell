@@ -20,17 +20,16 @@
       Informacion, de los arvhivo dentro del ZIP. Por patalla
        
     .EXAMPLE
-    
-    -PathZip -Comprimir -Directorio 
-        .\ejercicio4.ps1 'C:\Users\Fernando\Desktop\Carpeta destinos zip' -Comprimir 'Carpeta Origen'
-        .\ejercicio4.ps1 '.\Carpeta destinos zip' -Comprimir '.\Carpeta Origen'                      
-        .\ejercicio4.ps1 'Carpeta destinos zip' -Comprimir 'C:\Users\Fernando\Desktop\Carpeta Origen'
+    -PathZip -Comprimir -Directorio
+    .\ejercicio4.ps1 'C:\Users\Fernando\Desktop\Carpeta destinos zip' -Comprimir 'Carpeta Origen'
+    .\ejercicio4.ps1 '.\Carpeta destinos zip' -Comprimir '.\Carpeta Origen'                      
+    .\ejercicio4.ps1 'Carpeta destinos zip' -Comprimir 'C:\Users\Fernando\Desktop\Carpeta Origen'
       
 
     .EXAMPLE 
-    
     -PathZip  -Descomprimir -Directorio
         .\ejercicio4.ps1 Archivo.zip -Descomprimir 'Carpeta Destino' 
+    .EXAMPLE  
     -PathZip  -Imformar
         .\Ejercicio4.ps1 C:\Users\Fernando\Desktop\archivo.zip -Informar        
 #>
