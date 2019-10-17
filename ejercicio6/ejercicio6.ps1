@@ -9,21 +9,26 @@
 # Sullca, Fernando      37841788
 # Zabala, Gaston        34614948
 ##########################################################################
+
 <#
         .SYNOPSIS
+              
                 El script se encarga de Sumar dos matrices o realizar un Producto entre una matriz y un escalar.
 
         .DESCRIPTION
+
                 El script recibe una matriz en un archivo de texto y una palabra clave.
                 Si la palabra clave es -Producto, recibe un numero entero, con el cual va a realizar el producto escolar.
                 Si la palabra clave es -Suma, debe ingresar un archivo con otra matriz a sumar.
                 Luego guarda la matriz en un nuevo archivo de texto.
+        
         .EXAMPLE
                 ./Ejercicio6.ps1 Entrada.txt -Suma matSuma.txt
         .EXAMPLE
                 ./Ejercicio6.ps1 Entrada2.txt -Producto -15
         .EXAMPLE
                 ./Ejercicio6.ps1 "entr ada3.txt" -Suma "mat suma.txt"
+
 #>
 
 #Validación de los parámetros
