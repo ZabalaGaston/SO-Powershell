@@ -123,15 +123,11 @@ function comprimir {
     }
 #-------------------------------------
     [ System.IO.DirectoryInfo]$_dirOrigen=$Directorio
-    #Write-Host $_dirOrigen.Name
-    #[string]$nombre=$_dirOrigen.BaseName
-    #Write-Host $($PathZip+"\"+$nombre+".zip")
+
 #--------------------------------------   
         $compress = @{
             LiteralPath= $Directorio
             CompressionLevel = "Optimal"
-            #DestinationPath = $Directorio+"\"+$PathZip 
-            #DestinationPath = $PathZip 
             DestinationPath = $($PathZip+"\"+$_dirOrigen.BaseName+".zip")
             }
         Compress-Archive @compress
@@ -155,11 +151,7 @@ function descomprimir {
     }
 
     [System.IO.DirectoryInfo]$_dirOrigen=$PathZip
-    #Write-Host "Nombre $_dirOrigen" "Nombre "$_dirOrigen.Name
     Expand-Archive -LiteralPath $PathZip -DestinationPath $Directorio"\"$($_dirOrigen.Name)
-    
-    #[string]$nombre=Get-ChildItem $PathZip | Select-Object -Property Name
-    #Expand-Archive -LiteralPath $PathZip -DestinationPath $Directorio"\"$($($nombre.TrimStart("@{Name=")).TrimEnd('}'))
 
 }#Fin descomprimir
 
@@ -177,7 +169,6 @@ if ( $Comprimir.IsPresent)
 {
     Write-Host ("Realizando compresion Sobre [$Directorio] ") 
     comprimir $PathZip $Directorio
-    #Write-Host ("Nombre asignado Sobre [$Directorio] es $PathZip ") 
     Write-Host ("Compresion finalizada") 
 }
 
