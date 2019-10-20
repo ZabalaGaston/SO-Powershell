@@ -30,30 +30,31 @@
 ########## ----- DECLARACION DE PARAMETROS ----- ##########
 
 Param (
-  [Parameter(Mandatory)]
-  [ValidateNotNullOrEmpty()]
-  [string[]]$Entrada,
-
-  [Parameter(Mandatory)]
-  [ValidateNotNullOrEmpty()]
-  [string[]]$Salida
+ [Parameter(Mandatory = $true)]
+ [ValidateNotNullOrEmpty()]
+ [ValidatePattern(".*.csv")] # el parametro tiene que ser un archivo
+ [ValidateScript({
+            if(!(Test-Path $_)) {
+                throw "El archivo csv de entrada no existe"
+            }
+            return $true
+        })]
+ [string] $entrada,
+ [Parameter(Mandatory = $true)]
+ [ValidateNotNullOrEmpty()]
+ [ValidatePattern(".*.csv")] # el parametro tiene que ser un archivo
+ [string] $salida,
+ [string] $help
 )
-
-########## ----- VALIDACION DE PARAMETROS ----- ##########
-
-if(!(Test-Path $Entrada)){
-  Write-Host "El directorio de Entrada no existe"
-  exit
-}
 
 ########## ----- MAIN ----- ##########
 
-$routes = Import-Csv -Path "$Entrada"
+$routes = Import-CSV -Delimiter "," -Path $Entrada
 
 $logs = @()
 
 foreach ($route in $routes) {
-  if((Test-Path $route.origen) -And (Test-Path $route.destino)){
+  if((Test-Path $route.origen)){
     Move-Item -Path $route.origen -Destination $route.destino
     $logs += @{archivo=$route.destino;fecha=Get-Date -DisplayHint Date}
   }
