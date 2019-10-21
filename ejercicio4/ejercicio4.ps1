@@ -15,15 +15,15 @@
     .DESCRIPTION
     
     Este script se encarga :
-      Descompresion,de un archivo ZIP pasado por parametro con el PathZip y la ruta de destino
-      Compresion, de el directorio pasado por parametro con el PathZip y la ruta de destino Zip
-      Informacion, de los arvhivo dentro del ZIP. Por patalla
+      Descompresion,de un archivo ZIP(Existente) pasado por parametro con el -PathZip y la ruta de destino
+      Compresion, de el directorio(exixtente) pasado por parametro con el -PathZip incluyando el nombrea ZIP y la ruta de destino Zip
+      Informacion, de los archivo dentro del ZIP. Por patalla
        
     .EXAMPLE
     -PathZip -Comprimir -Directorio
-    .\ejercicio4.ps1 'C:\Users\Fernando\Desktop\Carpeta destinos zip' -Comprimir 'Carpeta Origen'
-    .\ejercicio4.ps1 '.\Carpeta destinos zip' -Comprimir '.\Carpeta Origen'                      
-    .\ejercicio4.ps1 'Carpeta destinos zip' -Comprimir 'C:\Users\Fernando\Desktop\Carpeta Origen'
+    .\ejercicio4.ps1 'C:\Users\Fernando\Desktop\Carpeta destinos zip\archivo.zip' -Comprimir 'Carpeta Origen'
+    .\ejercicio4.ps1 '.\Carpeta destinos zip\archivo .zip' -Comprimir '.\Carpeta Origen'                      
+    .\ejercicio4.ps1 '.\archivo.zip' -Comprimir 'C:\Users\Fernando\Desktop\Carpeta Origen'
       
 
     .EXAMPLE 
@@ -31,7 +31,7 @@
         .\ejercicio4.ps1 Archivo.zip -Descomprimir 'Carpeta Destino' 
     .EXAMPLE  
     -PathZip  -Imformar
-        .\Ejercicio4.ps1 C:\Users\Fernando\Desktop\archivo.zip -Informar        
+        .\Ejercicio4.ps1 'C:\Users\Fernando\Desktop\archivo.zip' -Informar     
 #>
 
 #--------------------------Declaracion de parametros-------------------------
@@ -106,28 +106,36 @@ exit 0
 #--------------------------Funciones comprimir---------
 function comprimir {
     param ( [String] $PathZip, [String] $Directorio )
-    $existe = Test-Path $PathZip
-
-    if (-Not ($existe)) {
-    Write-Host "El PathZip [$PathZip] no existe"
-    Write-Host ""
-    return
+     [ System.IO.DirectoryInfo]$_dirOrigen=$PathZip
+    
+  $existe = Test-Path $PathZip.ToString().TrimEnd($($_dirOrigen.BaseName))
+   
+    if (-Not  $($null -eq $($_dirOrigen.Extension)) )
+    {
+        if (-Not $($($_dirOrigen.Extension) -eq ".zip"))
+            {
+                 Write-Host "Error de extencion de archivo[$PathZip] "
+                 exit 1
+            }
+        elseif ( -Not $existe) {
+            Write-Host "Error de directorio [ $PathZip ] No existe "
+            exit 1
+       }
+        
     }
     
     $existe = Test-Path $Directorio
     if ($existe -eq $false) {
     Write-Host "El Directorio [$Directorio] no existe"
     Write-Host ""
-    return
+    exit 1
     }
-#-------------------------------------
-    [ System.IO.DirectoryInfo]$_dirOrigen=$Directorio
 
-#--------------------------------------   
         $compress = @{
             LiteralPath= $Directorio
             CompressionLevel = "Optimal"
-            DestinationPath = $($PathZip+"\"+$_dirOrigen.BaseName+".zip")
+           # DestinationPath = $($PathZip+"\"+$_dirOrigen.BaseName+".zip")
+            DestinationPath = $PathZip
             }
         Compress-Archive @compress
 
