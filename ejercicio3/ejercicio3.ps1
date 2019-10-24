@@ -43,8 +43,7 @@ Param (
  [Parameter(Mandatory = $true)]
  [ValidateNotNullOrEmpty()]
  [ValidatePattern(".*.csv")] # el parametro tiene que ser un archivo
- [string] $salida,
- [string] $help
+ [string] $salida
 )
 
 ########## ----- MAIN ----- ##########
@@ -54,7 +53,7 @@ $routes = Import-CSV -Delimiter "," -Path $Entrada
 $logs = @()
 
 foreach ($route in $routes) {
-  if((Test-Path $route.origen)){
+  if((Test-Path -Path $route.origen) -and (Test-Path -Path $route.destino)) {
     Move-Item -Path $route.origen -Destination $route.destino
     $logs += @{archivo=$route.destino;fecha=Get-Date -DisplayHint Date}
   }
