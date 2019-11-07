@@ -55,7 +55,8 @@ $logs = @()
 foreach ($route in $routes) {
   if((Test-Path -Path $route.origen) -and (Test-Path -Path $route.destino)) {
     Move-Item -Path $route.origen -Destination $route.destino
-    $logs += @{archivo=$route.destino;fecha=Get-Date -DisplayHint Date}
+    $file = Split-Path $route.origen -leaf
+    $logs += @{archivo="$($route.destino)/$($file)";fecha=Get-Date -DisplayHint Date}
   }
 }
 
