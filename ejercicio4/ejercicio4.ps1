@@ -59,48 +59,55 @@
 #--------------------------Funciones Informar--------
 function informar {
  
-    param([string]$PathZip) 
-    if (-Not (Test-Path $PathZip)){
+    param([System.IO.DirectoryInfo]$PathZip) 
+    if (-Not (Test-Path $PathZip)) {
         Write-Warning "El archivo  [$PathZip] no existe."
         Write-Host ""
         return
     }
-    
+    if ([System.IO.Path]::IsPathRooted($PathZip)) {
+        $CrearRuta = $PathZip
+        #Write-Output "Ruta Absoluta"
+    }
+    else {
+        #$CrearRuta = Join-Path (pwd) $PathZip
+        $CrearRuta = $(Resolve-Path $PathZip)
+        #Write-Host "  El archivo [$CrearRuta] existe."
+    }
+
     function ArmandoEscritura { 
-   param([string]$name,[string]$tam_Orig,[string]$relacion)   
-      $obj = New-Object PSObject 
-      $obj | Add-Member NoteProperty Nombre($name) 
-      $obj | Add-Member NoteProperty Peso_original_MB($tam_Orig) 
-      $obj | Add-Member NoteProperty 'Relacion_Comp(P. Comp /P. Orig)'($relacion)  
-     # Escritura Final.
-      Write-Output $obj 
+        param([string]$name, [string]$tam_Orig, [string]$relacion)   
+        $obj = New-Object PSObject 
+        $obj | Add-Member NoteProperty Nombre($name) 
+        $obj | Add-Member NoteProperty Peso_original_MB($tam_Orig) 
+        $obj | Add-Member NoteProperty 'Relacion_Comp(P. Comp /P. Orig)'($relacion)  
+        # Escritura Final.
+        Write-Output $obj 
     };
     
     Add-Type -AssemblyName “system.io.compression.filesystem”;
     
-    [io.compression.zipfile]::OpenRead( "$PathZip" ).entries |% {
+    $entrada=[io.compression.zipfile]::OpenRead( "$CrearRuta" )
+    $entrada.entries | % {
     
-        if( $( -Not $_.Name ) ){
-        $Nombre="$($_)";
+        if ( $( -Not $_.Name ) ) {
+            $Nombre = "$($_)";
         }
-        else
-        {
-        $Nombre="$($_.Name)";
+        else {
+            $Nombre = "$($_.Name)";
         }
-        $Tam_Orig="$($($_.Length)/1000000)";
+        $Tam_Orig = "$($($_.Length)/1000000)";
  
-        if($($_.Length -eq 0) )
-         {
-         $Relacion="0";
-         }
-         else 
-        {
-        $Relacion="$([math]::Round(($_.CompressedLength/$_.Length),3))";
+        if ($($_.Length -eq 0) ) {
+            $Relacion = "0";
         }
- 
-     ArmandoEscritura  $Nombre $Tam_Orig $Relacion
+        else {
+            $Relacion = "$([math]::Round(($_.CompressedLength/$_.Length),3))";
+        }
+        ArmandoEscritura  $Nombre $Tam_Orig $Relacion
     };
-exit 0
+    $entrada.Dispose();
+    #exit 0
 }#Fin informar
 
 #--------------------------Funciones comprimir---------
@@ -121,7 +128,6 @@ function comprimir {
             Write-Host "Error de directorio [ $PathZip ] No existe "
             exit 1
        }
-        
     }
     
     $existe = Test-Path $Directorio
@@ -144,21 +150,20 @@ function comprimir {
 #--------------------------Funciones descomprimir------------
 function descomprimir {
     
-    param ([string] $PathZip, [string] $Directorio)
+    param ([System.IO.DirectoryInfo] $PathZip, [System.IO.DirectoryInfo] $Directorio)
 
-    if (-Not (Test-Path $PathZip)){
-        Write-Host "El PathZIP [$PathZip] no existe"
-    exit    
+    if (-Not (Test-Path $PathZip)) {
+        Write-Warning "El PathZIP [$PathZip] no existe"
+        exit    
     }
 
     $existe = Test-Path $Directorio
     if ( -Not $existe) {
-    Write-Host "El Directorio [$Directorio] no existe "
-    exit
+        Write-Host "El Directorio [$Directorio] no existe, Creando Directorio"
+        New-Item $Directorio -Type Directory
     }
-
-    [System.IO.DirectoryInfo]$_dirOrigen=$PathZip
-    Expand-Archive -LiteralPath $PathZip -DestinationPath $Directorio"\"$($_dirOrigen.Name)
+  
+    Expand-Archive -LiteralPath $PathZip -DestinationPath $Directorio"\"$($PathZip.Name)
 
 }#Fin descomprimir
 
@@ -170,6 +175,7 @@ if ( $Informar.IsPresent)
 {
     Write-Host ("Realizando informe Sobre [$PathZip]") 
     informar $PathZip
+    exit 1
 }
 
 if ( $Comprimir.IsPresent)
